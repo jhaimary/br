@@ -1,32 +1,44 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adolescent Pregnancy Statistics Report</title>
+    <title>Impacto Ambiental e Biodiversidade</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
 </head>
 <body>
     <header>
-        <h1>Adolescent Pregnancy Statistics Report</h1>
+        <h1>Impacto Ambiental e Aves</h1>
         <nav>
-            <a href="index.html">Mundo</a>
-            <a href="minha-escola.html">Minha escola</a>
+            <ul>
+                <li><a href="index.html">Mundo</a></li>
+                <li><a href="minha-escola.html">Minha escola</a></li>
+                <li><a href="impacto-ambiental.html">Impacto Ambiental</a></li> <!-- Novo link -->
+            </ul>
         </nav>
     </header>
+    
     <main class="graficos-section">
         <section id="graficos-container" class="graficos-container">
-            <!-- crie os gráficos/texto aqui -->
+            <!-- O gráfico sobre o impacto ambiental será gerado aqui -->
+        </section>
+        
+        <section id="texto-impacto" class="texto-impacto">
+            <p>
+                O impacto ambiental está afetando diversas espécies ao redor do mundo. Entre os efeitos mais significativos está a ameaça à biodiversidade, com o aumento da poluição e a destruição de habitats naturais. As aves, por exemplo, estão enfrentando uma grande perda de habitat devido ao desmatamento e à poluição do ar e da água.
+                <br><br>
+                O gráfico abaixo mostra as principais ameaças à biodiversidade global, incluindo o impacto no número de aves ameaçadas. A conservação dos habitats naturais e a redução da emissão de gases poluentes são essenciais para a proteção de espécies como as aves.
+            </p>
         </section>
     </main>
+
     <footer>
-        <p>Desenvolvido por jhai</p>
+        <p>Desenvolvido por Jhai</p>
     </footer>
+
+    <!-- Carregar scripts -->
     <script type="module" src="graficos/common.js"></script>
-    <script type="module" src="graficos/informacoesGlobais.js"></script>
-    <script type="module" src="graficos/quantidadeUsuarios.js"></script>
-    <script type="module" src="graficos/redesFavoritasMundo.js"></script>
+    <script type="module" src="graficos/impactoAmbiental.js"></script> <!-- Novo script -->
 </body>
 </html>
