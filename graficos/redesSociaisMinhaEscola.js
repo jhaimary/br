@@ -1,27 +1,80 @@
-import { criarGrafico, getCSS, incluirTexto } from "./common.js"
+import { criarGrafico, getCSS, incluirTexto } from "./common.js";
 
-async function redesSociaisFavoritasMinhaEscola() {
-    const dadosLocaisString = localStorage.getItem('respostaRedesSociais')
-    if (dadosLocaisString) {
-        const dadosLocais = JSON.parse(dadosLocaisString)
-        processarDados(dadosLocais)
-    } else {
-        const url = 'https://script.googleusercontent.com/macros/echo?user_content_key=rSe23zaQC7gOvWgFJbdtPaqh7ewsO5hQmusYOeqdorTRN8C25vVV3BicsPoS6HS3jnJY9NHhy_pNZj6prQdxDH3305Mro8vNm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnPvESZ9fvnAeFWqfIvIacdoRZcVMZ-nDSydw9_0gseo2TN3y60rOTtwDBCYnKQf6yIqgf8yOzNfccjP633C9VnHmUmPZvRBJY9z9Jw9Md8uu&lib=MCARBaBtNBMHKiEwMeRap3j6V_G7SlGWF'
-        const res = await fetch(url)
-        const dados = await res.json()
-        localStorage.setItem('respostaRedesSociais', JSON.stringify(dados))
-        processarDados(dados)
+const CACHE_KEY = 'impactoAmbientalDados';
+const CACHE_EXPIRACAO = 86400000; // 1 dia em milissegundos
+
+function salvarDadosComExpiracao(chave, dados) {
+    const item = {
+        valor: dados,
+        timestamp: Date.now()
+    };
+    localStorage.setItem(chave, JSON.stringify(item));
+}
+
+function obterDadosComExpiracao(chave) {
+    const itemString = localStorage.getItem(chave);
+    if (!itemString) return null;
+
+    const item = JSON.parse(itemString);
+    if (Date.now() - item.timestamp > CACHE_EXPIRACAO) {
+        localStorage.removeItem(chave);
+        return null;
+    }
+
+    return item.valor;
+}
+
+async function impactoAmbientalDados() {
+    try {
+        let dados = obterDadosComExpiracao(CACHE_KEY);
+
+        if (!dados) {
+            console.log("Carregando dados da API...");
+            const url = 'https://script.googleusercontent.com/macros/echo?user_content_key=EXEMPLO_DE_URL&lib=EXEMPLO_DE_LIB';
+            const res = await fetch(url);
+
+            if (!res.ok) {
+                throw new Error(`Erro ao carregar dados: ${res.statusText}`);
+            }
+
+            dados = await res.json();
+            salvarDadosComExpiracao(CACHE_KEY, dados);
+        } else {
+            console.log("Carregando dados do cache...");
+        }
+
+        processarDadosImpactoAmbiental(dados);
+    } catch (error) {
+        console.error("Erro ao obter ou processar os dados:", error);
+        incluirTexto("Ocorreu um erro ao carregar as informações. Tente novamente mais tarde.");
     }
 }
 
-function processarDados(dados) {
-    const redesSociais = dados.slice(1).map(redes => redes[1])
-    const contagemRedesSociais = redesSociais.reduce((acc, redesSociais) => {
-        acc[redesSociais] = (acc[redesSociais] || 0) + 1
-        return acc
-    }, {})
-    const valores = Object.values(contagemRedesSociais)
-    const labels = Object.keys(contagemRedesSociais)
+function processarDadosImpactoAmbiental(dados) {
+    if (!Array.isArray(dados) || dados.length === 0) {
+        console.error("Os dados obtidos são inválidos.");
+        incluirTexto("Nenhum dado disponível para exibir o impacto ambiental.");
+        return;
+    }
+
+    const impactos = dados.slice(1).map(item => item[1]).filter(Boolean);
+    const contagemImpactos = impactos.reduce((acc, impacto) => {
+        acc[impacto] = (acc[impacto] || 0) + 1;
+        return acc;
+    }, {});
+
+    if (Object.keys(contagemImpactos).length === 0) {
+        console.warn("Nenhum impacto ambiental foi encontrado nos dados.");
+        incluirTexto("Nenhum dado disponível sobre o impacto ambiental.");
+        return;
+    }
+
+    criarGraficoImpactoAmbiental(contagemImpactos);
+}
+
+function criarGraficoImpactoAmbiental(contagemImpactos) {
+    const valores = Object.values(contagemImpactos);
+    const labels = Object.keys(contagemImpactos);
 
     const data = [
         {
@@ -30,14 +83,14 @@ function processarDados(dados) {
             type: 'pie',
             textinfo: 'label+percent'
         }
-    ]
+    ];
 
     const layout = {
         plot_bgcolor: getCSS('--bg-color'),
         paper_bgcolor: getCSS('--bg-color'),
         height: 700,
         title: {
-            text: 'Redes sociais que as pessoas da minha escola mais gostam',
+            text: 'Principais Impactos Ambientais Identificados',
             x: 0,
             font: {
                 color: getCSS('--primary-color'),
@@ -51,10 +104,10 @@ function processarDados(dados) {
                 size: 16
             }
         }
-    }
+    };
 
-    criarGrafico(data, layout)
-    incluirTexto(`Como no mundo, a amostra de pessoas entrevistadas por mim, demonstra um apreço pelo <span>Instagram</span> em relação a outras redes.`)
+    criarGrafico(data, layout);
+    incluirTexto(`O gráfico acima mostra os impactos ambientais mais frequentes, baseados em dados coletados.`);
 }
 
-redesSociaisFavoritasMinhaEscola()
+impactoAmbientalDados();
