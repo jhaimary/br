@@ -1,45 +1,68 @@
-import { getCSS, criarGrafico, incluirTexto } from "./common.js"
+import { getCSS, criarGrafico, incluirTexto } from "./common.js";
 
-async function redesFavoritasMundo() {
-    const url = 'https://raw.githubusercontent.com/guilhermeonrails/api/main/redes-favoritas.json'
-    const res = await fetch(url)
-    const dados = await res.json()
-    const redes = Object.keys(dados)
-    const valores = Object.values(dados)
-
-    const data = [
-        {
-            values: valores,
-            labels: redes,
-            type: 'pie',
-            textinfo: 'label+percent'
+async function fontesDeEmissoesGlobais() {
+    const url = 'https://raw.githubusercontent.com/guilhermeonrails/api/main/emissoes-por-setor.json';
+    try {
+        const res = await fetch(url);
+        if (!res.ok) {
+            throw new Error(`Erro ao carregar os dados: ${res.statusText}`);
         }
-    ]
 
-    const layout = {
-        plot_bgcolor: getCSS('--bg-color'),
-        paper_bgcolor: getCSS('--bg-color'),
-        height: 700,
-        title: {
-            text: 'Redes sociais que os usuários mais gostam',
-            x: 0,
-            font: {
-                color: getCSS('--primary-color'),
-                family: getCSS('--font'),
-                size: 30
+        const dados = await res.json();
+        const setores = Object.keys(dados);
+        const valores = Object.values(dados);
+
+        const data = [
+            {
+                values: valores,
+                labels: setores,
+                type: 'pie',
+                textinfo: 'label+percent',
+                marker: {
+                    colors: [
+                        getCSS('--color-energy'),
+                        getCSS('--color-transport'),
+                        getCSS('--color-industry'),
+                        getCSS('--color-agriculture'),
+                        getCSS('--color-waste')
+                    ]
+                }
             }
-        },
-        legend: {
-            font: {
-                color: getCSS('--primary-color'),
-                size: 16
+        ];
+
+        const layout = {
+            plot_bgcolor: getCSS('--bg-color'),
+            paper_bgcolor: getCSS('--bg-color'),
+            height: 700,
+            title: {
+                text: 'Fontes de Emissões de Gases de Efeito Estufa',
+                x: 0,
+                font: {
+                    color: getCSS('--primary-color'),
+                    family: getCSS('--font'),
+                    size: 30
+                }
+            },
+            legend: {
+                font: {
+                    color: getCSS('--primary-color'),
+                    size: 16
+                }
             }
-        }
+        };
+
+        criarGrafico(data, layout);
+
+        incluirTexto(`
+            O gráfico destaca as principais fontes de emissões globais de gases de efeito estufa. 
+            A <span>energia</span> lidera como a maior responsável, contribuindo significativamente para o aquecimento global. 
+            Seguem <span>indústria</span> e <span>agricultura</span> como outros grandes emissores. 
+            Reduzir essas emissões é essencial para mitigar as mudanças climáticas e proteger o planeta.
+        `);
+    } catch (error) {
+        console.error("Erro ao carregar ou processar os dados:", error);
+        incluirTexto(`Houve um problema ao carregar os dados sobre emissões. Tente novamente mais tarde.`);
     }
-
-    criarGrafico(data, layout)
-
-    incluirTexto(`Embora o <span>Instagram</span> ocupe a quarta posição em termos de número total de usuários entre as redes sociais, destaca-se como a <span>preferida pelos usuários</span>. Supera até mesmo o <span>Facebook</span>, a plataforma com mais usuários, sendo a terceira opção mais apreciada pelos usuários. <br>Essa preferência evidencia a forte conexão e apreço que as pessoas têm pelo Instagram em comparação com outras redes sociais`)
 }
 
-redesFavoritasMundo()
+fontesDeEmissoesGlobais();
