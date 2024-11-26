@@ -1,15 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
 
 :root {
-    --bg-color: #81BEF7;
-    --primary-color: #8258FA;
-    --secondary-color: #190710;
+    --bg-color: #E8F5E9; /* Verde claro, tom natural */
+    --primary-color: #2E7D32; /* Verde escuro para destacar sustentabilidade */
+    --secondary-color: #1B5E20; /* Verde mais profundo para contrastar */
+    --accent-color: #0288D1; /* Azul para lembrar o impacto da água e do céu */
     --font: "Nunito Sans", sans-serif;
 }
 
 body {
     background-color: var(--bg-color);
-    color: var(--primary-color);
+    color: var(--secondary-color);
     font-family: var(--font);
     height: 100vh;
     margin: 0;
@@ -44,6 +45,7 @@ nav a:hover {
     text-decoration: underline;
     transform: scale(0.90);
     transition: transform 0.1s;
+    color: var(--accent-color); /* Realce no hover */
 }
 
 .grafico {
@@ -58,12 +60,14 @@ nav a:hover {
     font-size: 1.3rem;
     text-align: center;
     padding: 2rem;
-    border: var(--secondary-color) solid 2px;
+    border: var(--primary-color) solid 2px;
+    background-color: var(--bg-color);
+    color: var(--secondary-color);
 }
 
 span {
     font-weight: bold;
-    color: var(--secondary-color);
+    color: var(--accent-color); /* Realce com azul */
 }
 
 footer {
